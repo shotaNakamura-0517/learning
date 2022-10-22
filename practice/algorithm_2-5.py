@@ -17,24 +17,17 @@ from stop_watch import stop_watch
 
 @stop_watch
 def getMaximumProfit (rate_list):
-    '''
-    Algorithm1[O(n*m)] : 3回探索する
-        1.各プレイヤーの得点を配列A[10]に入力する(グローバル変数をコピー)。
-        2.Aの中に含まれる10個の数から最大の値を出力する。
-        3.2.で選ばれた要素を除いた9個の中から、最大値を探して出力する。
-        4.3.で選ばれた要素を除いた8個の中から、最大値を探して出力する。
-    '''
     print('getMaximumProfit:start')
     max = rate_list[1] - rate_list[0]
     min_rate = rate_list[0]
 
     for i in range(len(rate_list)-1):
-        if min_rate > rate_list[i] or i==0:
+        if min_rate > rate_list[i] or i == 0:
             min_rate = rate_list[i]
-            print("ループ実行：" + str(i) + "番目の要素：" + str(rate_list[i]))
+            #print("ループ実行：" + str(i) + "番目の要素：" + str(rate_list[i]))
             for j in range(i+1,len(rate_list)):
                 result = rate_list[j] - rate_list[i]
-                print("計算結果：" + str(rate_list[j]) + "-" + str(rate_list[i]) + "=" + str(result))
+                #print("計算結果：" + str(rate_list[j]) + "-" + str(rate_list[i]) + "=" + str(result))
                 max = result if result > max else max
     print("最大利益：" + str(max))
     print('getMaximumProfit:end')
@@ -47,7 +40,7 @@ def getMaximumProfitAns (rate_list):
 
     for i in range(1,len(rate_list)):
         result = rate_list[i] - min_rate 
-        print("計算結果：" + str(rate_list[i]) + "-" + str(min_rate) + "=" + str(result))
+        #print("計算結果：" + str(rate_list[i]) + "-" + str(min_rate) + "=" + str(result))
         max = result if result > max else max #i時刻での売却利益が最大の場合、最大値に設定
         min_rate = rate_list[i] if min_rate > rate_list[i] else min_rate # i時刻までの最小金額を設定
     print("最大利益：" + str(max))
