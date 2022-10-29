@@ -38,14 +38,16 @@ def BubbleSortAns  (sort_list):
     i = 0
     while continueFlg:
         continueFlg = False
+        #print(i)
         for j in range(len(sort_list)-1 , i , -1):
+            #print(j)
             if sort_list[j] < sort_list[j - 1]: 
                 tmp = sort_list[j - 1]
                 sort_list[j - 1] = sort_list[j]
                 sort_list[j] = tmp
                 continueFlg = True
                 exchangeCnt += 1
-    i += 1
+        i += 1
     print(" ".join(map(str, sort_list)))
     print(exchangeCnt)
     print('BubbleSortAns:end')
