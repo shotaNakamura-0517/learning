@@ -1,65 +1,39 @@
 # -*- coding: utf-8 -*-
- # 3.4選択ソート   
+ # 3.6シェルソート   
 '''
-ALDS_1_2_A :Bubble Sort 
-    数列Aを読み込み、選択ソートで昇順に並べ替え出力するプログラムを作成してください。
-    ソートが行われた要素の交換回数も出力してください。
+ALDS_1_2_D :Shell Sort 
+    shellSortは一定の間隔gだけ離れた要素のみを対象とした挿入ソートであるinsertionSortを
+    最初は大きい値からgを狭めながら繰り返します。これをシェルソートといいます。
 '''
 
 import copy
-from operator import truediv
 from stop_watch import stop_watch
+from algorithm_3_2 import InsertionSort
 
 @stop_watch
-def SelectionSort  (sort_list):
-    print('SelectionSort:start')
+def ShellSort  (sort_list , n):
+    print('ShellSort:start')
+    #print('リストサイズ:'+str(n))
     print(" ".join(map(str, sort_list)))
-    exchangeCnt = 0
-    for i in range(0 , len(sort_list)):
-        #print('i:'+str(i))
-        minJ = i
-        for j in range(i , len(sort_list)):
-            #print('j:'+str(j))
-            if sort_list[j] < sort_list[minJ]: 
-                minJ = j
-        if i!= minJ:
-            tmp = sort_list[i]
-            sort_list[i] = sort_list[minJ]
-            sort_list[minJ] = tmp
-            exchangeCnt += 1
-            #print(" ".join(map(str, sort_list)))
-    print(" ".join(map(str, sort_list)))
-    print(exchangeCnt)
-    print('SelectionSort:end')
+    G = []
+    h = 1
+    
+    while h < n:
+        #print('h:'+ str(h)) 
+        G.append(h)
+        h = 3*h + 1
 
-@stop_watch
-def SelectionSortAns  (sort_list):
-    print('SelectionSortAns:start')
-    print(" ".join(map(str, sort_list)))
-    exchangeCnt = 0
-    for i in range(0 , len(sort_list)):
-        #print('i:'+str(i))
-        minJ = i
-        for j in range(i , len(sort_list)):
-            #print('j:'+str(j))
-            if sort_list[j] < sort_list[minJ]: 
-                minJ = j
-        tmp = sort_list[i]
-        sort_list[i] = sort_list[minJ]
-        sort_list[minJ] = tmp
-        if i!= minJ:
-            exchangeCnt += 1
-            #print(" ".join(map(str, sort_list)))
-    print(" ".join(map(str, sort_list)))
-    print(exchangeCnt)
-    print('SelectionSortAns:end')
+    #print('ソート間隔リスト:' + " ".join(map(str, G)))    
 
+    for i in range(len(G) - 1 , -1, -1):
+        #print('ソート間隔:'+str(G[i]))
+        InsertionSort(sort_list , n , G[i])
+    print('ShellSort:end')
 
 def main(): 
     print('main:start')
-    sort_list = [5,2,4,6,1,3]
-    SelectionSort(copy.copy(sort_list))
-    SelectionSortAns(copy.copy(sort_list))
+    sort_list = [5,2,4,6,1,3,99,3,49,88,44,100,5,2,4,6,1,3,99,3,49,88,44,100]
+    ShellSort(sort_list , len(sort_list))
     print('main:end')
 
 if __name__ == '__main__':

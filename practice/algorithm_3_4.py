@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
  # 3.4選択ソート   
 '''
-ALDS_1_2_A :Selection Sort 
+ALDS_1_2_B :Selection Sort 
     数列Aを読み込み、選択ソートで昇順に並べ替え出力するプログラムを作成してください。
     ソートが行われた要素の交換回数も出力してください。
 '''
 
 import copy
-from operator import truediv
 from stop_watch import stop_watch
 
 @stop_watch

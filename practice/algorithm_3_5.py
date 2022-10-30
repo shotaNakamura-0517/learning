@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
  # 3.5安定なソート   
 '''
-ALDS_1_2_A :Stable Sort 
+ALDS_1_2_C :Stable Sort 
     数列Aを読み込み、バブルソート及び選択ソートのアルゴリズムを用いて、
     与えられたN枚のカードをそれらの数字を基準に昇順に並べ替え出力するプログラムを作成してください。
 '''
 
 import copy
-from operator import truediv
 from stop_watch import stop_watch
 
 class card(object):

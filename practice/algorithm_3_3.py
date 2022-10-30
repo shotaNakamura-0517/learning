@@ -7,7 +7,6 @@ ALDS_1_2_A :Bubble Sort
 '''
 
 import copy
-from operator import truediv
 from stop_watch import stop_watch
 
 @stop_watch
