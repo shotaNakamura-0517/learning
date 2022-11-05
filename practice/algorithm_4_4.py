@@ -36,7 +36,9 @@ def outputDoublyLinkedList(command,list_):
 @stop_watch       
 def main(): 
     print('main:start')
-    input = [commandList('unshift',5),commandList('unshift',2),commandList('unshift',3),commandList('unshift',1),commandList('delete',3),commandList('unshift',6),commandList('delete',5),commandList('delete',2),commandList('delete',5),commandList('unshift',5),commandList('unshift',2),commandList('unshift',3),commandList('unshift',1),commandList('delete',5),commandList('insert',5,4),commandList('reverse')]
+    input = [commandList('unshift',5),commandList('unshift',2),commandList('unshift',3),commandList('unshift',1),commandList('delete',3),commandList('unshift',6),\
+            commandList('delete',5),commandList('delete',2),commandList('delete',5),commandList('unshift',5),commandList('unshift',2),commandList('unshift',3),\
+            commandList('unshift',1),commandList('delete',5),commandList('insert',5,4),commandList('reverse')]
     list_ = DoublyLinkedList()
 
     for elm in input:
