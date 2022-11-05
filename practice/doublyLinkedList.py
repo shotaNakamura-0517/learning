@@ -146,6 +146,11 @@ class DoublyLinkedList:
             Node.next = tmpPrev
             Node.prev = tmpNext
             Node = Node.prev
+            #if Node!=None:
+                #print('値:' + str(Node.val))
+                #print('前:' + str(Node.prev))
+                #print('後:' + str(Node.next))
+
         return self
 
 #以下、自分で実装
@@ -155,21 +160,20 @@ class DoublyLinkedList:
             return False
         target = self.head
         count = 0
-        while target.val != val and count < self.length -1 :
+        #while target.val != val and count < self.length -1 :
+        while target!=None and target.val != val:
             target = target.next
             count += 1
-        if target.val == val:
+
+        if target!=None and target.val == val:
             if target == self.head:
-                #print('delete:end')
                 return self.shift()
             elif target == self.tail:
-                #print('delete:end')
                 return self.pop()
             else:
                 target.prev.next = target.next
                 target.next.prev = target.prev
                 self.length = self.length - 1
-        #print('delete:end')
         return self
 
     def getIndex(self , val):
@@ -177,10 +181,12 @@ class DoublyLinkedList:
             return -1
         target = self.head
         count = 0
-        while target.val != val and count < self.length -1 :
+        #while target.val != val and count < self.length -1 :
+        while target!=None and target.val != val:
             target = target.next
             count += 1
-        if target.val == val:
+
+        if target!=None and target.val == val:
             return count
         else:
             return -1

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
- # 4.2スタック   
+ # 4.3キュー
 '''
-ALDS_1_3_A :Stack 
+ALDS_1_3_B :Queue
     ラウンドロビンスケジューリングをシミュレートするプログラムを出力してください。
     入力：入力形式は以下の通りです。
             n q
@@ -32,7 +32,7 @@ def simulateRoundrobinCpuScheduling  (list_ , q):
         que_top = que.popleft()
         que_top.time -= q
         print('処理プロセス名：' + que_top.name)
-        if(que_top.time<0):
+        if(que_top.time<=0):
             processing_time+=(q + que_top.time)
             result.append(que_top.name + ' ' + str(processing_time) + 's')
             print('処理時間：' + str(processing_time))
@@ -47,7 +47,7 @@ def simulateRoundrobinCpuScheduling  (list_ , q):
 def main(): 
     print('main:start')
     quantum = 100
-    input = [process('p1',150),process('p2',80),process('p3',200),process('p4',350),process('p5',20)]
+    input = [process('p1',180),process('p2',80),process('p3',200),process('p4',350),process('p5',20)]
     simulateRoundrobinCpuScheduling(input.copy(),quantum)
     print('main:end')
 

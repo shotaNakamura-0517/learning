@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
- # 4.2スタック   
+ # 4.4連結リスト   
 '''
-ALDS_1_3_A :Stack 
-    ラウンドロビンスケジューリングをシミュレートするプログラムを出力してください。
+ALDS_1_3_C : Doubly Linked List
+    以下の命令を受け付ける双方向連結リストを実装してください
+    unshift x   :連結リストの先頭にキーxを持つ要素を継ぎ足す
+    insert x , y:連結リストのy番目にキーxを持つ要素を継ぎ足す
+    delete x    :キーxを持つ最初の要素を削除する
+    deleteFirst :連結リストの先頭の要素を削除する
+    deleteLast  :連結リストの末尾の要素を削除する
+    reverse     :連結リストを逆順にして返却する
+
     入力：入力形式は以下の通りです。
-            n q
-            name_1 time_1
-            name_2 time_2
-    出力：プロセスが完了した順に各プロセスの名前と終了時間を空白で区切って1行に出力してください。
+            n 
+            commandList_1
+            commandList_2
+    出力：各行の命令実行後に連結配列をカンマ区切りで出力してください。
 '''
 
 import copy
@@ -21,11 +28,11 @@ class commandList:
         self.val = int(val)
         self.index = index
 
-def outputDoublyLinkedList(command,list_):
+def outputDoublyLinkedList(command , val , list_):
     output = list_.head
     count = 0
 
-    print(command,end=':')
+    print(command + '(key-' + str(val) + ')',end=':')
     while count < list_.length -1 :
         print(str(output.val),end=',')
         output = output.next
@@ -38,29 +45,29 @@ def main():
     print('main:start')
     input = [commandList('unshift',5),commandList('unshift',2),commandList('unshift',3),commandList('unshift',1),commandList('delete',3),commandList('unshift',6),\
             commandList('delete',5),commandList('delete',2),commandList('delete',5),commandList('unshift',5),commandList('unshift',2),commandList('unshift',3),\
-            commandList('unshift',1),commandList('delete',5),commandList('insert',5,4),commandList('reverse')]
+            commandList('unshift',1),commandList('delete',5),commandList('insert',5,4),commandList('delete',1),commandList('reverse')]
     list_ = DoublyLinkedList()
 
     for elm in input:
         if elm.command == 'unshift':
             list_.unshift(elm.val)
-            outputDoublyLinkedList(elm.command,list_)
+            outputDoublyLinkedList(elm.command, elm.val , list_)
         elif elm.command == 'insert':
             list_.insert(elm.index , elm.val)
-            outputDoublyLinkedList(elm.command,list_)
+            outputDoublyLinkedList(elm.command, elm.val , list_)
         elif elm.command == 'delete':
             index = list_.getIndex(elm.val)
             list_.remove(index)
-            outputDoublyLinkedList(elm.command,list_)
+            outputDoublyLinkedList(elm.command, elm.val , list_)
         elif elm.command == 'delteFirst':
             list_.shift()
-            outputDoublyLinkedList(elm.command,list_)
+            outputDoublyLinkedList(elm.command, elm.val , list_)
         elif elm.command == 'deleteLast':
             list_.pop()
-            outputDoublyLinkedList(elm.command,list_)
+            outputDoublyLinkedList(elm.command, elm.val , list_)
         elif elm.command == 'reverse':
             list_.reverse()
-            outputDoublyLinkedList(elm.command,list_)
+            outputDoublyLinkedList(elm.command, elm.val , list_)
         else:
             print('実行可能なコマンドではありません')
 
