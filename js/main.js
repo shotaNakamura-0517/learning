@@ -1,5 +1,5 @@
 //利用者ごとの設定値を入力してください。
-const SPREAD_SHEET_ID = "テンプレートシートのIDを記載";
+const SPREAD_SHEET_ID = "1zjSWvE9pTFFBtj4Tqa9_xy_m-AZNr_lIkBXDvMxqWvw";
 const CONF_SHEET_NAME = "予定"
 
 const SPREAD_SHEET = SpreadsheetApp.openById(SPREAD_SHEET_ID);
@@ -25,6 +25,8 @@ const OUTPUT_SHEET_NAME_2 = TEMPLATE_SHEET_NAME_2.replace('yyyyMM',OUTPUT_MONTH)
 
 //画像を保存するフォルダ情報
 const RECEIPT_ROOT_FOLDER_ID = CONF_SHEET.getRange("C34").getValue();
+const RECEIPT_ROOT_FOLDER = DriveApp.getFolderById(RECEIPT_ROOT_FOLDER_ID);
+
 const RECEIPT_FOLDER_ID = CONF_SHEET.getRange("C33").getValue();
 const GRAPH_FOLDER_ID = CONF_SHEET.getRange("C35").getValue();
 
@@ -122,10 +124,8 @@ function callback(e) {
       }else if(value.length == 1 && value == '使い方'){
         debug('start:outputManual');
 
-        /*文字列で送信する場合
-        bot.replyMessage(e, [bot.textMessage(MANUAL_STR)]);
-        */
-
+        //bot.replyMessage(e, [bot.textMessage(MANUAL_STR)]);
+        
         //ファイルURL取得
         let manualUrl=DriveApp.getFileById(MANUAL_FILE_ID).getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
         bot.replyMessage(e, [bot.textMessage(manualUrl)]);        
@@ -143,7 +143,7 @@ function callback(e) {
       }else if(value.length == 1 && value == '支出明細'){
         debug('start:outputExpenditureStatement');
 
-        /* 文字列で送信する場合
+        /* 文字列で出力する場合
         let arr =SPREAD_SHEET.getRangeByName("支出明細_" + OUTPUT_MONTH).getValues().filter(n => n[2]!=0);
         bot.replyMessage(e, [bot.textMessage(arr.join("\n"))]);
         */
@@ -151,7 +151,8 @@ function callback(e) {
         debug('start:createImageFile');
         let charts = OUTPUT_SHEET_1.getCharts();
         let imageBlob = charts[0].getBlob().getAs('image/png').setName("chart_image.png");
-         //フォルダIDを指定して、フォルダを取得
+        
+        //フォルダIDを指定して、フォルダを取得
         let folder = DriveApp.getFolderById(GRAPH_FOLDER_ID);
  
         //同名ファイル削除
@@ -165,13 +166,15 @@ function callback(e) {
 
         //ファイルURL取得
         let imageUrl=folder.getFilesByName("chart_image.png").next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
-        bot.replyMessage(e, [bot.textMessage(imageUrl)]);        
+        bot.replyMessage(e, [{ type: 'image', originalContentUrl:imageUrl , previewImageUrl:imageUrl }]);        
         debug('end:outputExpenditureStatement');
         debug('end:processingMessage');
+
       }else if(value.length != 3){
         bot.replyMessage(e, [bot.textMessage("入力値は3行で入力ください。\n（分類、項目、金額）")]);
         debug('end:processingMessage');
         return;
+
       }else{
         let values = [value];
 
@@ -259,15 +262,14 @@ function createMonthSheet() {
     CONF_SHEET.getRange("C32").setValue(1);
 
     //画像を保存するフォルダを作成
-    const ROOT_FOLDER = DriveApp.getFolderById(RECEIPT_ROOT_FOLDER_ID);
-    const FOLDER_ITERATOR = ROOT_FOLDER.getFoldersByName(OUTPUT_MONTH);
+    const FOLDER_ITERATOR = RECEIPT_ROOT_FOLDER.getFoldersByName(OUTPUT_MONTH);
     let targetFolder;
     if (FOLDER_ITERATOR.hasNext()) {
       // 存在する場合
       targetFolder = FOLDER_ITERATOR.next();
     } else {
       // 存在しない場合
-      targetFolder = ROOT_FOLDER.createFolder(OUTPUT_MONTH);
+      targetFolder = RECEIPT_ROOT_FOLDER.createFolder(OUTPUT_MONTH);
     }
 
     CONF_SHEET.getRange("C33").setValue(targetFolder.getId());
