@@ -33,6 +33,27 @@ const GRAPH_FOLDER_ID = CONF_SHEET.getRange("C35").getValue();
 //マニュアルのファイル情報
 const MANUAL_FILE_ID = CONF_SHEET.getRange("C38").getValue();
 
+//確認テンプレート（JSON）
+const CONFIRM_TEMPLATE = {"type": "template",
+                           "altText": "this is a confirm template",
+                           "template": {
+                                        "type": "confirm",
+                                        "text": "レシートを登録しますか?",
+                                        "actions": [
+                                                      {
+                                                        "type": "message",
+                                                        "label": "画像あり",
+                                                        "text": "画像あり"
+                                                      },
+                                                      {
+                                                        "type": "message",
+                                                        "label": "画像なし",
+                                                        "text": "画像なし"
+                                                      }
+                                                    ]
+                                        }
+                          };
+
   if(!SPREAD_SHEET.getSheetByName(OUTPUT_SHEET_NAME_1)){
     createMonthSheet();
   }
@@ -121,10 +142,12 @@ function callback(e) {
         bot.replyMessage(e, [bot.textMessage("画像の登録をスキップしました。")]);
         debug('end:processingMessage');
 
+      }else if(value.length == 1 && value == '画像あり'){
+        bot.replyMessage(e, [bot.textMessage("画像を送信してください。")]);
+        debug('end:processingMessage');
+
       }else if(value.length == 1 && value == '使い方'){
         debug('start:outputManual');
-
-        //bot.replyMessage(e, [bot.textMessage(MANUAL_STR)]);
         
         //ファイルURL取得
         let manualUrl=DriveApp.getFileById(MANUAL_FILE_ID).getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
@@ -143,10 +166,6 @@ function callback(e) {
       }else if(value.length == 1 && value == '支出明細'){
         debug('start:outputExpenditureStatement');
 
-        /* 文字列で出力する場合
-        let arr =SPREAD_SHEET.getRangeByName("支出明細_" + OUTPUT_MONTH).getValues().filter(n => n[2]!=0);
-        bot.replyMessage(e, [bot.textMessage(arr.join("\n"))]);
-        */
 
         debug('start:createImageFile');
         let charts = OUTPUT_SHEET_1.getCharts();
@@ -166,12 +185,18 @@ function callback(e) {
 
         //ファイルURL取得
         let imageUrl=folder.getFilesByName("chart_image.png").next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
-        bot.replyMessage(e, [{ type: 'image', originalContentUrl:imageUrl , previewImageUrl:imageUrl }]);        
+        bot.replyMessage(e, [{ type: 'image', originalContentUrl:imageUrl , previewImageUrl:imageUrl }]);
+
+        /*文字列で出力する場合
+        let arr =SPREAD_SHEET.getRangeByName("支出明細_" + OUTPUT_MONTH).getValues().filter(n => n[2]!=0);
+        bot.pushMessage(e.source.userId, [bot.textMessage(arr.join("\n"))]);
+        */
+
         debug('end:outputExpenditureStatement');
         debug('end:processingMessage');
 
       }else if(value.length != 3){
-        bot.replyMessage(e, [bot.textMessage("入力値は3行で入力ください。\n（分類、項目、金額）")]);
+        bot.replyMessage(e, [bot.textMessage("登録値は3行で入力ください。\n（分類、項目、金額）")]);
         debug('end:processingMessage');
         return;
 
@@ -195,6 +220,7 @@ function callback(e) {
         debug('start:sequenceTextId');
         
         bot.replyMessage(e, [bot.textMessage("テキストの登録が完了しました。")]);
+        bot.pushMessage(e.source.userId, [CONFIRM_TEMPLATE]);
         debug('end:processingMessage');
       }
     }
