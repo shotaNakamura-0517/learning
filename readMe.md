@@ -1,12 +1,22 @@
 LINE CHATBOTとGASを用いた家計簿アプリ（個人利用）
 
-■利用方法
+## 目次
+- [目次](#目次)
+- [利用方法](#利用方法)
+- [設定方法](#設定方法)
+  - [LINE CHATBOTの登録](#line-chatbotの登録)
+  - [Googleドライブへのファイル配置](#googleドライブへのファイル配置)
+  - [GAS作成](#gas作成)
+  - [スプレッドシート内の設定値変更](#スプレッドシート内の設定値変更)
+  - [LINE CHATBOTのメニュー登録](#line-chatbotのメニュー登録)
+
+##  利用方法
 ・「家計簿アプリ_利用方法.pdf」を参照。
 
-■設定方法
-・LINE CHATBOTの登録
+##  設定方法
+###   LINE CHATBOTの登録
     ※以下のサイトを参考にしてください。
-        https://qiita.com/nkjm/items/38808bbc97d6927837cd#channel%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B
+        https://qiita.com/nkjm/items/38808bbc97d6927837cd### channel%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B
 
     1.以下のサイトにアクセスし、アカウント登録を行ってください。
         https://developers.line.biz/ja/
@@ -21,7 +31,7 @@ LINE CHATBOTとGASを用いた家計簿アプリ（個人利用）
         ※手順5のみ「GAS作成」の後に実施ください。
 
 
-・Googleドライブへのファイル配置
+###   Googleドライブへのファイル配置
     1.LINE CHATBOT用のフォルダを作成してください。
 
     2.手順1で作成したフォルダに以下のフォルダを作成してください。
@@ -37,7 +47,7 @@ LINE CHATBOTとGASを用いた家計簿アプリ（個人利用）
         ・LINE_CHATBOT_家計簿_テンプレート.xlsx
     
     6.手順5で配置したファイルを開き、 URLの「spreadsheets/d」以降の部分をメモしてください。　★4
-        ※「/edit#gid=～」部分は不要です。
+        ※「/edit### gid=～」部分は不要です。
     
     7.手順2で作成した「マニュアル」フォルダに以下のファイルを配置してください。
         ・家計簿アプリ_利用方法.pdf
@@ -48,7 +58,7 @@ LINE CHATBOTとGASを用いた家計簿アプリ（個人利用）
         ※「/view?usp=share_link」部分は不要です。
 
 
-・GAS作成
+###   GAS作成
     1.Googleドライブにて「新規」→「その他」→「Google App Script」の順にクリックしてください。
     
     2.デフォルトで記載されている内容を削除してください。
@@ -80,7 +90,7 @@ LINE CHATBOTとGASを用いた家計簿アプリ（個人利用）
     13.URLをメモします。　★6
 
 
-・スプレッドシート内の設定値変更
+###   スプレッドシート内の設定値変更
     1.「Googleドライブへのファイル配置」.手順5で配置したスプレッドシートを開いてください。
 
     2.「予定」シートを開いてください。
@@ -103,7 +113,7 @@ LINE CHATBOTとGASを用いた家計簿アプリ（個人利用）
 
 
 
-・LINE CHATBOTのメニュー登録
+###   LINE CHATBOTのメニュー登録
     ※以下のサイトを参考にしてください。
         https://qiita.com/bow_arrow/items/32ac5d2b4c67bd0c1dc2
 
