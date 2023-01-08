@@ -65,7 +65,6 @@ const OUTPUT_SHEET_1 = SPREAD_SHEET.getSheetByName(OUTPUT_SHEET_NAME_1);
 const OUTPUT_SHEET_2 = SPREAD_SHEET.getSheetByName(OUTPUT_SHEET_NAME_2);
 
 const CATEGORY_LIST = SPREAD_SHEET.getRangeByName("分類リスト").getValues().flat().filter(n => n!='');
-const MANUAL_STR = SPREAD_SHEET.getRangeByName("マニュアル").getValues().flat().join('');
 
 const ROW_START_1 = findRow(OUTPUT_SHEET_1,'ROW_START',1);
 const ROW_END_1 = findRow(OUTPUT_SHEET_1,'ROW_END',1);
