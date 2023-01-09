@@ -1,5 +1,5 @@
 //利用者ごとの設定値を入力してください。
-const SPREAD_SHEET_ID = "1zjSWvE9pTFFBtj4Tqa9_xy_m-AZNr_lIkBXDvMxqWvw";
+const SPREAD_SHEET_ID = "テンプレートシートのIDを記載してください";
 const CONF_SHEET_NAME = "予定"
 
 const SPREAD_SHEET = SpreadsheetApp.openById(SPREAD_SHEET_ID);
