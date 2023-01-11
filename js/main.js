@@ -6,11 +6,19 @@ const SPREAD_SHEET = SpreadsheetApp.openById(SPREAD_SHEET_ID);
 const CONF_SHEET = SPREAD_SHEET.getSheetByName(CONF_SHEET_NAME);
 
 //LINE CHATBOTのアクセストークン情報
-const ACCESS_TOKEN = CONF_SHEET.getRange("C27").getValue();
+const ACCESS_TOKEN = SPREAD_SHEET.getRangeByName("チャンネルアクセストークン").getValue();
 
 //テンプレートシート（月初めの登録の際に使用）
-const TEMPLATE_SHEET_NAME_1 = CONF_SHEET.getRange("C28").getValue();
-const TEMPLATE_SHEET_NAME_2 = CONF_SHEET.getRange("C29").getValue();
+const TEMPLATE_SHEET_NAME_1 = SPREAD_SHEET.getRangeByName("テンプレートシート名_1").getValue();
+const TEMPLATE_SHEET_NAME_2 = SPREAD_SHEET.getRangeByName("テンプレートシート名_2").getValue();
+
+//入力範囲情報
+const TEMPLATE_SHEET1_TEXT_COLOMUN_START = ConvertToNumber(SPREAD_SHEET.getRangeByName("実績シート入力列_start").getValue());
+const TEMPLATE_SHEET1_TEXT_COLOMUN_END = ConvertToNumber(SPREAD_SHEET.getRangeByName("実績シート入力列_end").getValue());
+const TEMPLATE_SHEET1_LINK_COLOMUN = ConvertToNumber(SPREAD_SHEET.getRangeByName("実績シート_リンク入力列").getValue());
+
+const TEMPLATE_SHEET2_TEXT_COLOMUN = ConvertToNumber(SPREAD_SHEET.getRangeByName("レシートシート_入力列").getValue());
+
 
 const TODAY = new Date();
 const YEAR = String(TODAY.getFullYear());
@@ -24,14 +32,17 @@ const OUTPUT_SHEET_NAME_1 = TEMPLATE_SHEET_NAME_1.replace('yyyyMM',OUTPUT_MONTH)
 const OUTPUT_SHEET_NAME_2 = TEMPLATE_SHEET_NAME_2.replace('yyyyMM',OUTPUT_MONTH);
 
 //画像を保存するフォルダ情報
-const RECEIPT_ROOT_FOLDER_ID = CONF_SHEET.getRange("C34").getValue();
+const RECEIPT_ROOT_FOLDER_ID = SPREAD_SHEET.getRangeByName("画像フォルダID").getValue();
 const RECEIPT_ROOT_FOLDER = DriveApp.getFolderById(RECEIPT_ROOT_FOLDER_ID);
 
-const RECEIPT_FOLDER_ID = CONF_SHEET.getRange("C33").getValue();
-const GRAPH_FOLDER_ID = CONF_SHEET.getRange("C35").getValue();
+const RECEIPT_FOLDER_ID = SPREAD_SHEET.getRangeByName("月別画像フォルダID").getValue();
+const GRAPH_FOLDER_ID = SPREAD_SHEET.getRangeByName("グラフ画像フォルダID").getValue();
+
+//グラフファイル名
+const GRAPH_FILE_NAME = SPREAD_SHEET.getRangeByName("グラフ画像ファイル名").getValue();
 
 //マニュアルのファイル情報
-const MANUAL_FILE_ID = CONF_SHEET.getRange("C38").getValue();
+const MANUAL_FILE_ID = SPREAD_SHEET.getRangeByName("マニュアルファイルID").getValue();
 
 //確認テンプレート（JSON）
 const CONFIRM_TEMPLATE = {"type": "template",
@@ -58,8 +69,8 @@ const CONFIRM_TEMPLATE = {"type": "template",
     createMonthSheet();
   }
 
-let textId = CONF_SHEET.getRange("C31").getValue();
-let imageId = CONF_SHEET.getRange("C32").getValue();
+let textId = SPREAD_SHEET.getRangeByName("シーケンス_テキスト").getValue();
+let imageId = SPREAD_SHEET.getRangeByName("シーケンス_画像").getValue();
 
 const OUTPUT_SHEET_1 = SPREAD_SHEET.getSheetByName(OUTPUT_SHEET_NAME_1);
 const OUTPUT_SHEET_2 = SPREAD_SHEET.getSheetByName(OUTPUT_SHEET_NAME_2);
@@ -106,23 +117,22 @@ function callback(e) {
       debug('end:getOcrText');
 
       debug('start:OUTPUT_SHEET_1.setValue');
-      let rowNo1 = String(imageId+ROW_START_1)
-      let rangeValue1 = 'E' + rowNo1;
-      let range1 = OUTPUT_SHEET_1.getRange(rangeValue1);
-      const sheetUrl = `#gid=${OUTPUT_SHEET_2.getSheetId()}&range=B${rowNo1}`;
+      let rowNo = String(imageId+ROW_START_1)
+      let range1 = OUTPUT_SHEET_1.getRange(rowNo,TEMPLATE_SHEET1_LINK_COLOMUN);
+
+      const sheetUrl = `#gid=${OUTPUT_SHEET_2.getSheetId()}&range=B${rowNo}`;
       const hlink = `=HYPERLINK("${sheetUrl}","レシート")`;
       range1.setValue(hlink);
       debug('end:OUTPUT_SHEET_1.setValue');
 
       debug('start:OUTPUT_SHEET_2.setValue');
-      let rowNo2 = String(imageId+ROW_START_2)
-      let rangeValue2 = 'B' + rowNo2;
-      let range2 = OUTPUT_SHEET_2.getRange(rangeValue2);
+      let range2 = OUTPUT_SHEET_2.getRange(rowNo,TEMPLATE_SHEET2_TEXT_COLOMUN);
+
       range2.setValue(text);
       debug('end:OUTPUT_SHEET_2.setValue');
 
       debug('start:sequenceImageId');
-      CONF_SHEET.getRange("C32").setValue(++imageId); 
+      SPREAD_SHEET.getRangeByName("シーケンス_画像").setValue(++imageId); 
       debug('end:sequenceImageId')
 
       bot.replyMessage(e, [bot.textMessage("レシートの登録が完了しました。")]);
@@ -136,7 +146,7 @@ function callback(e) {
 
       if(value.length == 1 && value == '画像なし'){
         debug('start:sequenceImageId');
-        CONF_SHEET.getRange("C32").setValue(++imageId); 
+        SPREAD_SHEET.getRangeByName("シーケンス_画像").setValue(++imageId); 
         debug('end:sequenceImageId')
         bot.replyMessage(e, [bot.textMessage("画像の登録をスキップしました。")]);
         debug('end:processingMessage');
@@ -168,22 +178,22 @@ function callback(e) {
 
         debug('start:createImageFile');
         let charts = OUTPUT_SHEET_1.getCharts();
-        let imageBlob = charts[0].getBlob().getAs('image/png').setName("chart_image.png");
+        let imageBlob = charts[0].getBlob().getAs('image/png').setName(GRAPH_FILE_NAME);
         
         //フォルダIDを指定して、フォルダを取得
         let folder = DriveApp.getFolderById(GRAPH_FOLDER_ID);
  
         //同名ファイル削除
-        let itr = folder.getFilesByName("chart_image.png");
+        let itr = folder.getFilesByName(GRAPH_FILE_NAME);
         if( itr.hasNext() ) {
-          folder.removeFile(itr.next());
+          itr.next().setTrashed(true);
         }
         //フォルダにcreateFileメソッドを実行して、ファイルを作成
         folder.createFile(imageBlob);
         debug('end:createImageFile');
 
         //ファイルURL取得
-        let imageUrl=folder.getFilesByName("chart_image.png").next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
+        let imageUrl=folder.getFilesByName(GRAPH_FILE_NAME).next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
         bot.replyMessage(e, [{ type: 'image', originalContentUrl:imageUrl , previewImageUrl:imageUrl }]);
 
         /*文字列で出力する場合
@@ -209,13 +219,13 @@ function callback(e) {
 
         debug('start:setValue');
         let rowNo = String(textId+ROW_START_1)
-        let rangeValue = 'B' + rowNo + ':D' + rowNo;
-        let range = OUTPUT_SHEET_1.getRange(rangeValue);
+        let range = OUTPUT_SHEET_1.getRange(rowNo,TEMPLATE_SHEET1_TEXT_COLOMUN_START,1,TEMPLATE_SHEET1_TEXT_COLOMUN_END-TEMPLATE_SHEET1_TEXT_COLOMUN_START +1);
+
         range.setValues(values);
         debug('end:setValue');
 
         debug('start:sequenceTextId');
-        CONF_SHEET.getRange("C31").setValue(++textId);
+        SPREAD_SHEET.getRangeByName("シーケンス_テキスト").setValue(++textId);
         debug('start:sequenceTextId');
         
         bot.replyMessage(e, [bot.textMessage("テキストの登録が完了しました。")]);
@@ -269,8 +279,8 @@ function createMonthSheet() {
     newsheet.showSheet();
 
     //支出明細のセル範囲に名前を設定
-    const NAMED_RANGE_START = CONF_SHEET.getRange("C36").getValue();;
-    const NAMED_RANGE_END = CONF_SHEET.getRange("C37").getValue();;
+    const NAMED_RANGE_START = SPREAD_SHEET.getRangeByName("支出明細_範囲_start").getValue();
+    const NAMED_RANGE_END = SPREAD_SHEET.getRangeByName("支出明細_範囲_end").getValue();
     let rangeValue = NAMED_RANGE_START + ':' + NAMED_RANGE_END;
     let range = newsheet.getRange(rangeValue);
     SPREAD_SHEET.setNamedRange("支出明細_" + OUTPUT_MONTH,range);
@@ -283,8 +293,8 @@ function createMonthSheet() {
     newsheet.showSheet();
 
     //シーケンスをリセット
-    CONF_SHEET.getRange("C31").setValue(1);
-    CONF_SHEET.getRange("C32").setValue(1);
+        SPREAD_SHEET.getRangeByName("シーケンス_テキスト").setValue(1);
+        SPREAD_SHEET.getRangeByName("シーケンス_画像").setValue(1);
 
     //画像を保存するフォルダを作成
     const FOLDER_ITERATOR = RECEIPT_ROOT_FOLDER.getFoldersByName(OUTPUT_MONTH);
@@ -297,7 +307,7 @@ function createMonthSheet() {
       targetFolder = RECEIPT_ROOT_FOLDER.createFolder(OUTPUT_MONTH);
     }
 
-    CONF_SHEET.getRange("C33").setValue(targetFolder.getId());
+    SPREAD_SHEET.getRangeByName("月別画像フォルダID").setValue(targetFolder.getId());
 
     debug("end:createMonthSheet");
   }catch(e){
@@ -314,4 +324,21 @@ function createMonthSheet() {
         debug(OUTPUT_SHEET_NAME_2 + "シートを削除しました");
    }
   }
+}
+function ConvertToNumber(strCol) {  
+  var iNum = 0;
+  var temp = 0;
+  
+  strCol = strCol.toUpperCase();
+  for (i = strCol.length - 1; i >= 0; i--) {
+    temp = strCol.charCodeAt(i) - 64; // 現在の文字番号;
+console.log(strCol.length - 1);                
+      if(i != strCol.length - 1) {
+      temp = (temp) * Math.pow(26,(i + 1));
+console.log(temp);
+    }
+    iNum = iNum + temp
+      console.log(iNum)
+  }
+  return iNum;
 }
