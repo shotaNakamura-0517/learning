@@ -134,10 +134,10 @@ function callback(e) {
       const blob = UrlFetchApp.fetch(replyUrl, options).getBlob();
       debug('end:fetch');
 
-      debug('start:createImageFile');
+      debug('start:createReceiptImageFile');
       const driveOptions = { title: e.message.id, parents: [{id: RECEIPT_FOLDER_ID}] };
       const image = Drive.Files.insert(driveOptions, blob, { "ocr": true, "ocrLanguage": "ja" });
-      debug('end:createImageFile');
+      debug('end:createReceiptImageFile');
 
       debug('start:getOcrText');
       const text = DocumentApp.openById(image.id).getBody().getText();
@@ -336,28 +336,18 @@ function createMonthSheet() {
 //-------------------------------------------------------------------
 function outputExpenditureStatement(){
   debug('start:outputExpenditureStatement');
-        debug('start:createImageFile');
-        let charts = OUTPUT_SHEET_1.getCharts();
-        let imageBlob = charts[0].getBlob().getAs('image/png').setName(GRAPH_FILE_NAME);
-        
+
         //フォルダIDを指定して、フォルダを取得
         let folder = DriveApp.getFolderById(GRAPH_FOLDER_ID);
- 
-        //同名ファイル削除
-        let itr = folder.getFilesByName(GRAPH_FILE_NAME);
-        if( itr.hasNext() ) {
-          //folder.removeFile(itr.next());
-          itr.next().setTrashed(true);
-        }
-        //フォルダにcreateFileメソッドを実行して、ファイルを作成
-        folder.createFile(imageBlob);
-        debug('end:createImageFile');
 
+        createImageFile(folder,GRAPH_FILE_NAME , 'jpeg');
+        createImageFile(folder,GRAPH_FILE_NAME , 'png');
         //ファイルURL取得
-        let imageUrl=folder.getFilesByName(GRAPH_FILE_NAME).next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
+        let originalContentUrl=folder.getFilesByName(GRAPH_FILE_NAME + '.jpeg').next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
+        let previewImageUrl = folder.getFilesByName(GRAPH_FILE_NAME + '.png').next().getDownloadUrl()+ "&access_token=" + ScriptApp.getOAuthToken();
 
         debug('end:outputExpenditureStatement');
-        return [{ type: 'image', originalContentUrl:imageUrl , previewImageUrl:imageUrl }];
+        return [{ type: 'image', originalContentUrl:originalContentUrl , previewImageUrl:previewImageUrl }];
 }
 
 function outputCategotyList(){
@@ -392,5 +382,24 @@ function addSequenceId(idName,val){
           SPREAD_SHEET.getRangeByName("シーケンス_テキスト").setValue(val);
           debug('end:sequenceTextId');
         }
+}
+
+function createImageFile(folder,imageFileName , extension){
+  debug('start:createImageFile');
+  let charts = OUTPUT_SHEET_1.getCharts();
+  let fileName = imageFileName + '.' + extension;
+  let imageBlob = charts[0].getBlob().getAs('image/' + extension).setName(fileName);
+   
+  //同名ファイル削除
+  let itr = folder.getFilesByName(fileName);
+  while(itr.hasNext()) {
+    let file = itr.next();
+    file.setTrashed(true);
+  }
+  //フォルダにcreateFileメソッドを実行して、ファイルを作成
+  folder.createFile(imageBlob);
+  debug('end:createImageFile');
+
+
 }
 //-------------------------------------------------------------------
